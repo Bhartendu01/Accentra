@@ -1,0 +1,9 @@
+import { motion } from 'framer-motion';
+
+export default function Page({ children, className = '' }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
