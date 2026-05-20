@@ -1,0 +1,45 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+  server:
+    build: ./server
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/accentra
+      CLIENT_URL: http://localhost:5173
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+  client:
+    build: ./client
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:5000/api
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+  laravel:
+    build: ./laravel
+    restart: unless-stopped
+    env_file:
+      - ./laravel/.env.example
+    environment:
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mongodb
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DATABASE: accentra_laravel
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+volumes:
+  mongo-data:
